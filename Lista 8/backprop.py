@@ -41,7 +41,7 @@ class BackPropagation:
         a2 = sigmoid(z2)
         return a1, a2
 
-    def train_step(self, x, target):
+    def train_step(self, x, target, epoca=None):
         # Forward
         a1, y = self.forward(x)
 
@@ -53,6 +53,7 @@ class BackPropagation:
 
         # Erro da camada oculta
         delta1 = (self.W2.T @ delta2) * sigmoid_deriv(a1)
+
         dW1 = np.outer(delta1, x)
         db1 = delta1
 
@@ -61,6 +62,19 @@ class BackPropagation:
         self.b2 -= self.ta * db2
         self.W1 -= self.ta * dW1
         self.b1 -= self.ta * db1
+
+        # Mostrar ajustes nos pesos a cada 5000 epocas
+        if epoca is not None and epoca % 5000 == 0:
+            print(f"\n=== Época {epoca} ===")
+            print("Equação geral: W = W - η * ΔW")
+            print(f"ΔW2 = {np.round(dW2, 4)}")
+            print(f"Δb2 = {np.round(db2, 4)}")
+            print(f"ΔW1 = {np.round(dW1, 4)}")
+            print(f"Δb1 = {np.round(db1, 4)}")
+            print(f"Novos W2 =\n{np.round(self.W2, 4)}")
+            print(f"Novos b2 = {np.round(self.b2, 4)}")
+            print(f"Novos W1 =\n{np.round(self.W1, 4)}")
+            print(f"Novos b1 = {np.round(self.b1, 4)}")
 
     def predict_bits(self, x):
         _, y = self.forward(x)
@@ -105,7 +119,7 @@ net = BackPropagation(n_in=2, n_oculta=2, n_out=1, ta=0.5) # 2 entradas, 2 neuro
 # Treinando em 10.000 epocas
 for epoca in range(10000):
     i = np.random.randint(0, 4)
-    net.train_step(inputs[i], targets[i])
+    net.train_step(inputs[i], targets[i], epoca=epoca)
 
 # Testes manuais
 test_cases = [
@@ -170,7 +184,7 @@ net2 = BackPropagation(n_in=7, n_oculta=5, n_out=4, ta=0.5) # 7 entradas, 5 neur
 # Treinando em 20.000 epocas
 for epoca in range(20000):
     i = np.random.randint(0, 10)
-    net2.train_step(inputs[i], targets[i])
+    net2.train_step(inputs[i], targets[i], epoca=epoca)
 
 
 # Testes
